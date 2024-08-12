@@ -1,0 +1,5 @@
+requests == 2.31.0
+eth_abi == 4.0.0
+eth-utils == 2.1.1
+eth-hash[pycryptodome] == 0.5.2
+scipy == 1.14.0

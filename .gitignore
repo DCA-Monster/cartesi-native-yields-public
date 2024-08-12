@@ -1,0 +1,30 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+
+
+# Venv
+venv
+
+__pycache__
+
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+contract-types
+node_modules
+htmlcov
+build
+cartesi_node.log

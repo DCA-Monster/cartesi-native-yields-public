@@ -1,0 +1,6 @@
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+forge-std/=lib/forge-std/src/
+@morpho-blue/=lib/morpho-blue/src/
+solmate/=lib/solmate/
+@uniswap/v3-core/=lib/v3-core/
+@cartesi-rollup-contracts/=lib/rollups-contracts/onchain/rollups/contracts/

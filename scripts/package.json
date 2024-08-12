@@ -1,0 +1,25 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./build/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-contract-types": "rm -rf ../out/build-info && rm -rf contract-types && mkdir -p contract-types && find ../out -name '*.json' ! -name 'Common.json' ! -name 'Create2.json' ! -name 'IERC20.json' ! -name 'MockERC20.json' ! -name 'StdAssertions.json' ! -name 'StdInvariant.json' ! -name 'SwapMock.json' ! -name 'console3.json' -print0 | xargs -0 -I {} bash -c 'filename=$(basename {}); if [ ! -f contract-types/$filename ]; then cp {} contract-types/$filename; fi' && typechain --target ethers-v6 --out-dir contract-types 'contract-types/*.json'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@typechain/ethers-v6": "^0.5.1",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@cartesi/rollups": "^1.4.0",
+    "ethers": "^6.13.2"
+  }
+}

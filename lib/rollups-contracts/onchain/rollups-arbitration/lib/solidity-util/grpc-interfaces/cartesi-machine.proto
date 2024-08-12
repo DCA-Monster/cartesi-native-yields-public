@@ -1,0 +1,564 @@
+// Copyright 2019 Cartesi Pte. Ltd.
+
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+
+
+syntax = "proto3";
+
+import "versioning.proto";
+
+package CartesiMachine;
+
+//Service definiton section
+
+service Machine {
+    rpc GetVersion(Void) returns (Versioning.GetVersionResponse) {}
+    rpc Machine(MachineRequest) returns (Void) {}
+    rpc Run(RunRequest) returns (RunResponse) {}
+    rpc Store(StoreRequest) returns (Void) {}
+    rpc Destroy(Void) returns (Void) {}
+    rpc Snapshot(Void) returns (Void) {}
+    rpc Rollback(Void) returns (Void) {}
+    rpc Shutdown(Void) returns (Void) {}
+    rpc Step(StepRequest) returns (StepResponse) {}
+    rpc ReadMemory(ReadMemoryRequest) returns (ReadMemoryResponse) {}
+    rpc WriteMemory(WriteMemoryRequest) returns (Void) {}
+    rpc ReadWord(ReadWordRequest) returns (ReadWordResponse) {}
+    rpc GetRootHash(Void) returns (GetRootHashResponse) {}
+    rpc GetProof(GetProofRequest) returns (GetProofResponse) {}
+    rpc ReplaceFlashDrive (ReplaceFlashDriveRequest) returns (Void) {}
+    rpc GetXAddress(GetXAddressRequest) returns (GetXAddressResponse) {}
+    rpc ReadX(ReadXRequest) returns (ReadXResponse) {}
+    rpc WriteX(WriteXRequest) returns (Void) {}
+    rpc ResetIflagsY(Void) returns (Void) {}
+    rpc GetDhdHAddress(GetDhdHAddressRequest) returns (GetDhdHAddressResponse) {}
+    rpc ReadDhdH(ReadDhdHRequest) returns (ReadDhdHResponse) {}
+    rpc WriteDhdH(WriteDhdHRequest) returns (Void) {}
+    rpc GetCsrAddress(GetCsrAddressRequest) returns (GetCsrAddressResponse) {}
+    rpc ReadCsr(ReadCsrRequest) returns (ReadCsrResponse) {}
+    rpc WriteCsr(WriteCsrRequest) returns (Void) {}
+    rpc GetInitialConfig(Void) returns (GetInitialConfigResponse) {}
+    rpc VerifyMerkleTree(Void) returns (VerifyMerkleTreeResponse) {}
+    rpc UpdateMerkleTree(Void) returns (UpdateMerkleTreeResponse) {}
+    rpc VerifyDirtyPageMaps(Void) returns (VerifyDirtyPageMapsResponse) {}
+    rpc DumpPmas(Void) returns (Void) {}
+    rpc GetDefaultConfig(Void) returns (GetDefaultConfigResponse) {}
+    rpc VerifyAccessLog(VerifyAccessLogRequest) returns (Void) {}
+    rpc VerifyStateTransition(VerifyStateTransitionRequest) returns (Void) {}
+
+}
+
+//Messages definition section
+
+message Void { }
+
+message Hash {
+    bytes data = 1;
+}
+
+message ProcessorConfig {
+    oneof x1_oneof {
+        uint64 x1 = 1;
+    }
+    oneof x2_oneof {
+        uint64 x2 = 2;
+    }
+    oneof x3_oneof {
+        uint64 x3 = 3;
+    }
+    oneof x4_oneof {
+        uint64 x4 = 4;
+    }
+    oneof x5_oneof {
+        uint64 x5 = 5;
+    }
+    oneof x6_oneof {
+        uint64 x6 = 6;
+    }
+    oneof x7_oneof {
+        uint64 x7 = 7;
+    }
+    oneof x8_oneof {
+        uint64 x8 = 8;
+    }
+    oneof x9_oneof {
+        uint64 x9 = 9;
+    }
+    oneof x10_oneof {
+        uint64 x10 = 10;
+    }
+    oneof x11_oneof {
+        uint64 x11 = 11;
+    }
+    oneof x12_oneof {
+        uint64 x12 = 12;
+    }
+    oneof x13_oneof {
+        uint64 x13 = 13;
+    }
+    oneof x14_oneof {
+        uint64 x14 = 14;
+    }
+    oneof x15_oneof {
+        uint64 x15 = 15;
+    }
+    oneof x16_oneof {
+        uint64 x16 = 16;
+    }
+    oneof x17_oneof {
+        uint64 x17 = 17;
+    }
+    oneof x18_oneof {
+        uint64 x18 = 18;
+    }
+    oneof x19_oneof {
+        uint64 x19 = 19;
+    }
+    oneof x20_oneof {
+        uint64 x20 = 20;
+    }
+    oneof x21_oneof {
+        uint64 x21 = 21;
+    }
+    oneof x22_oneof {
+        uint64 x22 = 22;
+    }
+    oneof x23_oneof {
+        uint64 x23 = 23;
+    }
+    oneof x24_oneof {
+        uint64 x24 = 24;
+    }
+    oneof x25_oneof {
+        uint64 x25 = 25;
+    }
+    oneof x26_oneof {
+        uint64 x26 = 26;
+    }
+    oneof x27_oneof {
+        uint64 x27 = 27;
+    }
+    oneof x28_oneof {
+        uint64 x28 = 28;
+    }
+    oneof x29_oneof {
+        uint64 x29 = 29;
+    }
+    oneof x30_oneof {
+        uint64 x30 = 30;
+    }
+    oneof x31_oneof {
+        uint64 x31 = 31;
+    }
+    oneof pc_oneof {
+        uint64 pc = 32;
+    }
+    oneof mvendorid_oneof {
+        uint64 mvendorid = 33;
+    }
+    oneof marchid_oneof {
+        uint64 marchid = 34;
+    }
+    oneof mimpid_oneof {
+        uint64 mimpid = 35;
+    }
+    oneof mcycle_oneof {
+        uint64 mcycle = 36;
+    }
+    oneof minstret_oneof {
+        uint64 minstret = 37;
+    }
+    oneof mstatus_oneof {
+        uint64 mstatus = 38;
+    }
+    oneof mtvec_oneof {
+        uint64 mtvec = 39;
+    }
+    oneof mscratch_oneof {
+        uint64 mscratch = 40;
+    }
+    oneof mepc_oneof {
+        uint64 mepc = 41;
+    }
+    oneof mcause_oneof {
+        uint64 mcause = 42;
+    }
+    oneof mtval_oneof {
+        uint64 mtval = 43;
+    }
+    oneof misa_oneof {
+        uint64 misa = 44;
+    }
+    oneof mie_oneof {
+        uint64 mie = 45;
+    }
+    oneof mip_oneof {
+        uint64 mip = 46;
+    }
+    oneof medeleg_oneof {
+        uint64 medeleg = 47;
+    }
+    oneof mideleg_oneof {
+        uint64 mideleg = 48;
+    }
+    oneof mcounteren_oneof {
+        uint64 mcounteren = 49;
+    }
+    oneof stvec_oneof {
+        uint64 stvec = 50;
+    }
+    oneof sscratch_oneof {
+        uint64 sscratch = 51;
+    }
+    oneof sepc_oneof {
+        uint64 sepc = 52;
+    }
+    oneof scause_oneof {
+        uint64 scause = 53;
+    }
+    oneof stval_oneof {
+        uint64 stval = 54;
+    }
+    oneof satp_oneof {
+        uint64 satp = 55;
+    }
+    oneof scounteren_oneof {
+        uint64 scounteren = 56;
+    }
+    oneof ilrsc_oneof {
+        uint64 ilrsc = 57;
+    }
+    oneof iflags_oneof {
+        uint64 iflags = 58;
+    }
+}
+
+message ROMConfig {
+    string bootargs = 1;
+    string image_filename = 2;
+}
+
+message RAMConfig {
+    uint64 length = 1;
+    string image_filename = 2;
+}
+
+message FlashDriveConfig {
+    uint64 start = 1;
+    uint64 length = 2;
+    string image_filename = 3;
+    bool shared = 4;
+}
+
+message CLINTConfig {
+    oneof mtimecmp_oneof {
+        uint64 mtimecmp = 1;
+    }
+}
+
+message HTIFConfig {
+    oneof fromhost_oneof {
+        uint64 fromhost = 1;
+    }
+    oneof tohost_oneof {
+        uint64 tohost = 2;
+    }
+    bool console_getchar = 3;
+    bool yield_progress = 4;
+    bool yield_rollup = 5;
+}
+
+message DHDConfig {
+    uint64 tstart = 1;
+    uint64 tlength = 2;
+    string image_filename = 3;
+    uint64 dlength = 4;
+    uint64 hlength = 5;
+    repeated uint64 h = 6;
+}
+
+message MachineConfig {
+    ProcessorConfig processor = 1;
+    ROMConfig rom = 2;
+    RAMConfig ram = 3;
+    repeated FlashDriveConfig flash_drive = 4;
+    CLINTConfig clint = 5;
+    HTIFConfig htif = 6;
+    DHDConfig dhd = 7;
+}
+
+message DHDRuntimeConfig {
+    string source_address = 1;
+}
+
+message ConcurrencyConfig {
+    uint64 update_merkle_tree = 1;
+}
+
+message MachineRuntimeConfig {
+    DHDRuntimeConfig dhd = 1;
+    ConcurrencyConfig concurrency = 2;
+}
+
+message MerkleTreeProof {
+    uint64 target_address = 1;
+    uint64 log2_target_size = 2;
+    Hash target_hash = 3;
+    uint64 log2_root_size = 4;
+    Hash root_hash = 5;
+    repeated Hash sibling_hashes = 6;
+}
+
+enum AccessType {
+    READ = 0;
+    WRITE = 1;
+}
+
+message Access {
+    AccessType type = 1;
+    bytes read = 2;
+    bytes written = 3;
+    MerkleTreeProof proof = 4;
+    uint64 address = 5;
+    uint64 log2_size = 6;
+}
+
+message BracketNote {
+    enum BracketNoteType {
+        BEGIN = 0;
+        END = 1;
+    }
+    BracketNoteType type = 1;
+    uint64 where = 2;
+    string text = 3;
+}
+
+message AccessLogType {
+    bool proofs = 1;
+    bool annotations = 2;
+}
+
+message AccessLog {
+    AccessLogType log_type = 1;
+    repeated Access accesses = 2;
+    repeated BracketNote brackets = 3;
+    repeated string notes = 4;
+}
+
+message MachineRequest {
+    oneof machine_oneof {
+        MachineConfig config = 1;
+        string directory = 2;
+    }
+    MachineRuntimeConfig runtime = 3;
+}
+
+message GetInitialConfigResponse {
+    MachineConfig config = 1;
+}
+
+message GetDefaultConfigResponse {
+    MachineConfig config = 1;
+}
+
+message VerifyAccessLogRequest {
+    AccessLog log = 1;
+    bool one_based = 2;
+    MachineRuntimeConfig runtime = 3;
+}
+
+message VerifyStateTransitionRequest {
+    Hash root_hash_before = 1;
+    AccessLog log = 2;
+    Hash root_hash_after = 3;
+    bool one_based = 4;
+    MachineRuntimeConfig runtime = 5;
+}
+
+message VerifyMerkleTreeResponse {
+    bool success = 1;
+}
+
+message UpdateMerkleTreeResponse {
+    bool success = 1;
+}
+
+message VerifyDirtyPageMapsResponse {
+    bool success = 1;
+}
+
+message RunRequest {
+    uint64 limit = 1;
+}
+
+message RunResponse {
+    uint64 mcycle = 1;
+    uint64 tohost = 2;
+    bool iflags_h = 3;
+    bool iflags_y = 4;
+}
+
+message StoreRequest {
+    string directory = 1;
+}
+
+message StepRequest {
+    AccessLogType log_type = 1;
+    bool one_based = 2;
+}
+
+message StepResponse {
+    AccessLog log = 1;
+}
+
+message ReadWordRequest {
+    uint64 address = 1;
+}
+
+message ReadWordResponse {
+    bool success = 1;
+    uint64 value = 2;
+}
+
+message ReadMemoryRequest {
+    uint64 address = 1;
+    uint64 length = 2;
+}
+
+message ReadMemoryResponse {
+    bytes data = 1;
+}
+
+message WriteMemoryRequest {
+    uint64 address = 1;
+    bytes data = 2;
+}
+
+message GetRootHashResponse {
+    Hash hash = 1;
+}
+
+message GetProofRequest {
+    uint64 address = 1;
+    uint64 log2_size = 2;
+}
+
+message GetProofResponse {
+    MerkleTreeProof proof = 1;
+}
+
+message ReplaceFlashDriveRequest {
+    FlashDriveConfig config = 1;
+}
+
+message GetXAddressRequest {
+    uint32 index = 1;
+}
+
+message GetXAddressResponse {
+    uint64 address = 1;
+}
+
+message ReadXRequest {
+    uint32 index = 1;
+}
+
+message ReadXResponse {
+    uint64 value = 1;
+}
+
+message WriteXRequest {
+    uint32 index = 1;
+    uint64 value = 2;
+}
+
+message GetDhdHAddressRequest {
+    uint32 index = 1;
+}
+
+message GetDhdHAddressResponse {
+    uint64 address = 1;
+}
+
+message ReadDhdHRequest {
+    uint32 index = 1;
+}
+
+message ReadDhdHResponse {
+    uint64 value = 1;
+}
+
+message WriteDhdHRequest {
+    uint32 index = 1;
+    uint64 value = 2;
+}
+
+enum Csr {
+    PC = 0;
+    MVENDORID = 1;
+    MARCHID = 2;
+    MIMPID = 3;
+    MCYCLE = 4;
+    MINSTRET = 5;
+    MSTATUS = 6;
+    MTVEC = 7;
+    MSCRATCH = 8;
+    MEPC = 9;
+    MCAUSE = 10;
+    MTVAL = 11;
+    MISA = 12;
+    MIE = 13;
+    MIP = 14;
+    MEDELEG = 15;
+    MIDELEG = 16;
+    MCOUNTEREN = 17;
+    STVEC = 18;
+    SSCRATCH = 19;
+    SEPC = 20;
+    SCAUSE = 21;
+    STVAL = 22;
+    SATP = 23;
+    SCOUNTEREN = 24;
+    ILRSC = 25;
+    IFLAGS = 26;
+    CLINT_MTIMECMP = 27;
+    HTIF_TOHOST = 28;
+    HTIF_FROMHOST = 29;
+    HTIF_IHALT = 30;
+    HTIF_ICONSOLE = 31;
+    HTIF_IYIELD = 32;
+    DHD_RESERVED = 33;
+    DHD_TSTART = 34;
+    DHD_TLENGTH = 35;
+    DHD_DLENGTH = 36;
+    DHD_HLENGTH = 37;
+}
+
+message GetCsrAddressRequest {
+    Csr csr = 1;
+}
+
+message GetCsrAddressResponse {
+    uint64 address = 1;
+}
+
+message ReadCsrRequest {
+    Csr csr = 1;
+}
+
+message ReadCsrResponse {
+    uint64 value = 1;
+}
+
+message WriteCsrRequest {
+    Csr csr = 1;
+    uint64 value = 2;
+}
+

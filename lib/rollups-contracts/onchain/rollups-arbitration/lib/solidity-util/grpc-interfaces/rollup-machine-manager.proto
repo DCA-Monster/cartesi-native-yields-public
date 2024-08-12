@@ -1,0 +1,198 @@
+// Copyright 2021 Cartesi Pte. Ltd.
+
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+
+syntax = "proto3";
+
+import "versioning.proto";
+
+import "cartesi-machine.proto";
+
+package CartesiRollupMachineManager;
+
+service RollupMachineManager {
+    rpc GetVersion(CartesiMachine.Void) returns (Versioning.GetVersionResponse) {}
+    rpc StartSession (StartSessionRequest) returns (CartesiMachine.Void) {}
+    rpc EnqueueInput (EnqueueInputRequest) returns (CartesiMachine.Void) {}
+    rpc GetStatus (CartesiMachine.Void) returns (GetStatusResponse) {}
+    rpc GetSessionStatus (GetSessionStatusRequest) returns (GetSessionStatusResponse) {}
+    rpc GetEpochStatus (GetEpochStatusRequest) returns (GetEpochStatusResponse) {}
+    rpc FinishEpoch (FinishEpochRequest) returns (CartesiMachine.Void) {}
+    rpc EndSession (EndSessionRequest) returns (CartesiMachine.Void) {}
+}
+
+message GetStatusResponse {
+    repeated string session_id = 1;
+}
+
+// Specifies deadlines for interactions with the machine server
+// All deadlines are in milliseconds
+message DeadlineConfig {
+    uint64 check_in = 1; // Deadline for receiving check-in from spawned machine server
+    uint64 update_merkle_tree = 2; // Deadline for updating a Merkle tree
+    uint64 run_input = 3; // Deadline for running an entire input
+    uint64 run_input_chunk = 4; // Deadline for running an input chunk
+    uint64 machine = 5; // Deadling for instantiating a machine
+    uint64 store = 6; // Deadling for storing a machine
+    uint64 fast = 7; // Deadling for fast machine server operations
+}
+
+// This call initiates a new session.
+// It specifies a machine, either by config or by directory.
+// That machine has a given active epoch and is about to process the current input.
+// The processing of each input is limited by a maximum number of cycles.
+// The machine has 3 special flash drive pairs: input, outputs, and messages.
+// The outputs and messages flash drive pairs contain arrays of entries.
+message StartSessionRequest {
+    string session_id = 1;
+    CartesiMachine.MachineRequest machine = 2;
+    uint64 active_epoch_index = 3;
+    uint64 max_cycles_per_input = 4;
+    uint64 cycles_per_input_chunk = 5;
+    PayloadAndMetadata input_description = 6;
+    PayloadAndMetadataArray outputs_description = 7;
+    PayloadAndMetadataArray messages_description = 8;
+    DeadlineConfig server_deadline = 9;
+}
+
+message TaintStatus {
+    int32 error_code = 1;
+    string error_message = 2;
+}
+
+message GetSessionStatusRequest {
+    string session_id = 1;
+}
+
+message GetSessionStatusResponse {
+    string session_id = 1;
+    uint64 active_epoch_index = 2;
+    repeated uint64 epoch_index = 3;
+    TaintStatus taint_status = 4;
+}
+
+// This call deletes the session, removing all cached data
+// It does *not* remove any machines that might have been stored by FinishEpoch
+message EndSessionRequest {
+    string session_id = 1;
+}
+
+// Pair of flash drive indices
+message PayloadAndMetadata {
+    uint64 metadata_flash_drive_index = 1;
+    uint64 payload_flash_drive_index = 2;
+}
+
+// Pair of flash drive indices containing arrays of entries.
+// Each entry in the payload flash drive has a given length and there are count of them.
+message PayloadAndMetadataArray {
+    PayloadAndMetadata drive_pair = 1;
+    uint64 entry_count = 2;
+    uint64 payload_entry_length = 3;
+}
+
+// There is only one active epoch per session.
+// That epoch has a certain number of already processed inputs and a number of
+// inputs enqueue for processing
+// The call enqueues the next input for processing and immediately returns.
+// If the active epoch index or current input index do not match what is
+// expected by the session, the call returns an error.
+// Results themselves will be gathered later by a call to GetStatus.
+message EnqueueInputRequest {
+    string session_id = 1;
+    uint64 active_epoch_index = 2;   // To double-check the desired epoch is the active one
+    uint64 current_input_index = 3;  // To double-check the current input in the active epoch is the expected one
+    bytes input_metadata = 4;
+    bytes input_payload = 5;
+}
+
+// Returns all data available for the requested epoch in a session
+// If the manager does not have information available, it returns an error
+// The manager will indefinitely keep all data for all epochs it processed in a given session
+// until it is closed by EndSession
+message GetEpochStatusRequest {
+    string session_id = 1;
+    uint64 epoch_index = 2; // May refer to an old epoch that is still cached by the session
+}
+
+enum InputSkipReason {
+    CYCLE_LIMIT_EXCEEDED = 0;
+    REQUESTED_BY_MACHINE = 1;
+    MACHINE_HALTED = 2;
+    TIME_LIMIT_EXCEEDED = 3;
+}
+
+// For an ACTIVE epoch or a FINISHED epoch with pending inputs, the
+// output_metadata_flash_drive_in_epoch and message_metadata_flash_drive_in_epoch
+// proofs are incremental. I.e., the output and message Merkle trees assume that
+// future output and message keccak hashes are zero in producing the proofs.
+// For FINISHED epochs without pending inputs, each proof takes into account
+// the output and message keccaks that came after in the epoch.
+message InputResult {
+    CartesiMachine.MerkleTreeProof outputs_metadata_flash_drive_in_machine = 1;
+    repeated Output outputs = 2;
+    CartesiMachine.MerkleTreeProof messages_metadata_flash_drive_in_machine = 3;
+    repeated Message messages = 4;
+}
+
+message ProcessedInput {
+    uint64 input_index = 1;
+    CartesiMachine.Hash most_recent_machine_hash = 2;
+    CartesiMachine.MerkleTreeProof outputs_metadata_flash_drive_in_epoch = 3;
+    CartesiMachine.MerkleTreeProof messages_metadata_flash_drive_in_epoch = 4;
+    oneof processed_oneof {
+        InputResult result = 5;
+        InputSkipReason skip_reason = 6;
+    };
+}
+
+enum EpochState {
+    ACTIVE = 0;
+    FINISHED = 1;
+}
+
+message GetEpochStatusResponse {
+    string session_id = 1;
+    uint64 epoch_index = 2;
+    EpochState state = 3;
+    CartesiMachine.Hash most_recent_machine_hash = 4;
+    CartesiMachine.Hash most_recent_outputs_epoch_root_hash = 5;
+    CartesiMachine.Hash most_recent_messages_epoch_root_hash = 6;
+    repeated ProcessedInput processed_inputs = 7;
+    uint64 pending_input_count = 8;
+    TaintStatus taint_status = 9;
+}
+
+message Message {
+    CartesiMachine.Hash keccak = 1;
+    bytes payload = 2;
+    CartesiMachine.MerkleTreeProof keccak_in_message_metadata_flash_drive = 3;
+}
+
+message Output {
+    CartesiMachine.Hash keccak = 1;
+    CartesiMachine.Hash address = 2;
+    bytes payload = 3;
+    CartesiMachine.MerkleTreeProof keccak_in_output_metadata_flash_drive = 4;
+}
+
+// This is synchronous call that should only happen after all
+// inputs in the active epoch have been processed.
+// Otherwise, the manager should return an error.
+//
+// Finishing an epoch increases the active epoch index,
+// empties the processed input list, and empties the output tree of the epochs,
+// and stores the machine state
+message FinishEpochRequest {
+    string session_id = 1;
+    uint64 active_epoch_index = 2; // To double-check epoch index is correct
+    uint64 processed_input_count = 3; // To double-check all inputs sent have been processed
+    string storage_directory = 4; // Directory to store machine state (do not store if empty string)
+}
